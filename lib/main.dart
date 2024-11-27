@@ -4,6 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
 import 'package:file_picker/file_picker.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'kulgeet_page.dart'; // Import the new page
 
 class MyHomePage extends StatefulWidget {
   final String title;
@@ -13,6 +14,7 @@ class MyHomePage extends StatefulWidget {
   @override
   MyHomePageState createState() => MyHomePageState();
 }
+
 
 class MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
@@ -29,6 +31,7 @@ class MyHomePageState extends State<MyHomePage> {
 
   late PageController _pageController;
   int _currentPage = 0;
+  double _imageSize = 40.0; // Initial size of the image
 
   void _showImagePreview(String imagePath) {
     showDialog(
@@ -295,7 +298,32 @@ class MyHomePageState extends State<MyHomePage> {
                 },
               ),
               ListTile(
-                leading: Icon(Icons.person),
+                leading: MouseRegion(
+                  onEnter: (_) {
+                    setState(() {
+                      _imageSize = 60.0; // Enlarge the image on hover
+                    });
+                  },
+                  onExit: (_) {
+                    setState(() {
+                      _imageSize = 40.0; // Reset the image size when not hovering
+                    });
+                  },
+                  child: GestureDetector(
+                    onTap: () {
+                      _showImagePreview('assets/image1.jpg'); // Open the image preview dialog
+                    },
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                      height: _imageSize,
+                      width: _imageSize,
+                      child: CircleAvatar(
+                        backgroundImage: AssetImage('assets/image1.jpg'), // Ensure you have this image in your assets
+                      ),
+                    ),
+                  ),
+                ),
                 title: Text('Profile'),
                 onTap: () {
                   // Show profile card
@@ -315,9 +343,31 @@ class MyHomePageState extends State<MyHomePage> {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            CircleAvatar(
-                              radius: 40,
-                              backgroundImage: AssetImage('assets/profile.jpg'), // Ensure you have this image in your assets
+                            MouseRegion(
+                              onEnter: (_) {
+                                setState(() {
+                                  _imageSize = 60.0; // Enlarge the image on hover
+                                });
+                              },
+                              onExit: (_) {
+                                setState(() {
+                                  _imageSize = 40.0; // Reset the image size when not hovering
+                                });
+                              },
+                              child: GestureDetector(
+                                onTap: () {
+                                  _showImagePreview('assets/image1.jpg'); // Open the image preview dialog
+                                },
+                                child: AnimatedContainer(
+                                  duration: const Duration(milliseconds: 300),
+                                  curve: Curves.easeInOut,
+                                  height: _imageSize,
+                                  width: _imageSize,
+                                  child: CircleAvatar(
+                                    backgroundImage: AssetImage('assets/image1.jpg'),
+                                  ),
+                                ),
+                              ),
                             ),
                             SizedBox(height: 10),
                             Text(
@@ -471,6 +521,16 @@ class MyHomePageState extends State<MyHomePage> {
                   ],
                 ),
               ),
+              ListTile(
+                leading: Icon(Icons.music_note),
+                title: Text('कुल-गीत'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => KulgeetPage()),
+                  );
+                },
+              ),
             ],
           ),
         ),
@@ -488,19 +548,41 @@ class MyHomePageState extends State<MyHomePage> {
                     ),
               ),
               SizedBox(
-                height: 200, // Adjust the height as needed
-                child: PageView.builder(
-                  controller: _pageController,
-                  itemCount: _imagePaths.length,
-                  itemBuilder: (context, index) {
-                    return GestureDetector(
-                      onTap: () => _showImagePreview(_imagePaths[index]),
-                      child: Image.asset(
-                        _imagePaths[index],
-                        fit: BoxFit.cover,
+                height: 100, // Adjust the height as needed
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: _imagePaths.map((url) {
+                    return Padding(
+                      padding: const EdgeInsets.all(3),
+                      child: MouseRegion(
+                        onEnter: (_) {
+                          setState(() {
+                            _imageSize = 60.0; // Enlarge the image on hover
+                          });
+                        },
+                        onExit: (_) {
+                          setState(() {
+                            _imageSize = 40.0; // Reset the image size when not hovering
+                          });
+                        },
+                        child: GestureDetector(
+                          onTap: () {
+                            _showImagePreview(url); // Open the image preview dialog
+                          },
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                            height: 40,
+                            width: 40,
+                            child: Image.network(
+                              url,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
                       ),
                     );
-                  },
+                  }).toList(),
                 ),
               ),
               Row(
